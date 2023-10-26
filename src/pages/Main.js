@@ -5,8 +5,9 @@ import axios from "axios";
 export default function Main() {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState("");
   const [sortedJsonObject, setSortedJsonObject] = useState([]);
+  const [search, setSearch] = useState();
   useEffect(() => {
     axios.get("https://restaurant-api.dicoding.dev/list").then((res) => {
       // setData = res.data.restaurants
@@ -15,6 +16,13 @@ export default function Main() {
       console.log(data);
     });
   }, []);
+  useEffect(() => {
+    axios.get(`https://restaurant-api.dicoding.dev/search?q=${search}`).then((res) =>{
+      setData(res.data.restaurants);
+      setLoading(false);
+      console.log(data)
+    })
+  }, [search])
   const handleSort = () => {
     const sortedRateList = data;
     if (sort === "Ascending") {
@@ -43,16 +51,24 @@ export default function Main() {
         centuries, but also the leap into electronic typesetting, remaining
         essentially unchanged.
       </p>
-      <div className="my-7 flex items-center gap-x-4">
-        <p>Filter By: </p>
+      <div className="my-7 flex items-center justify-between">
+        <div className="flex items-center gap-x-4">
+          <p>Filter By: </p>
+          <div>
+            <select
+              onChange={(e) => (setSort(e.target.value), handleSort())}
+              className="p-2"
+            >
+              <option disabled selected value="">
+                Rating
+              </option>
+              <option value="Ascending">Tertinggi</option>
+              <option value="Descending">Terendah</option>
+            </select>
+          </div>
+        </div>
         <div>
-          <select onChange={(e) => (setSort(e.target.value), handleSort())} className="p-2">
-            <option disabled selected value="">
-              Rating
-            </option>
-            <option value="Ascending">Tertinggi</option>
-            <option value="Descending">Terendah</option>
-          </select>
+          <input placeholder="Search Restaurant" className="px-4 border py-1" onChange={(e) => setSearch(e.target.value)} />
         </div>
       </div>
       <div>
